@@ -39,6 +39,10 @@ STATUS = {
     30: ("Timeout", "✘"),
 }
 
+def label(qid, slug):
+    return f"{qid}.{slug}" if qid.isdigit() else f"{qid} {slug}"
+
+
 BASE_NAME = {"python3": ("solution", "py"), "python": ("solution", "py"),
              "java": ("Solution", "java"), "cpp": ("solution", "cpp"), "c": ("solution", "c"),
              "golang": ("solution", "go"), "rust": ("solution", "rs"),
@@ -88,17 +92,28 @@ def extract_code(text, lang):
 
 
 def parse_problem(path):
-    """从目录名 <id>.<slug> 解析出题目标识符。"""
+    """解析题目标识符。优先读 question.md 里的题目链接（最可靠），否则回退到目录名 <id>.<slug>。"""
     p = os.path.abspath(path)
     if os.path.isfile(p):
         p = os.path.dirname(p)
-    name = os.path.basename(p.rstrip("/"))
-    if "." in name:
-        qid, slug = name.split(".", 1)
-    else:
-        qid, slug = name, None
+    p = p.rstrip("/")
+    name = os.path.basename(p)
+    qid = name.split(".", 1)[0] if "." in name else name
+    slug = None
+
+    qm = os.path.join(p, "question.md")
+    if os.path.exists(qm):
+        text = open(qm, encoding="utf-8").read()
+        m = re.search(r"https?://leetcode\.cn/problems/([A-Za-z0-9_\-]+)/", text)
+        if m:
+            slug = m.group(1)
+        h = re.search(r"^#\s*\[([^\]]+)\]", text, re.M)
+        if h:
+            qid = h.group(1).split(". ", 1)[0].strip()   # "面试题 02.07. 链表相交" -> "面试题 02.07"
+    if not slug and "." in name:
+        slug = name.split(".", 1)[1]
     if not slug:
-        raise SystemExit(f"✘ 目录名 '{name}' 不含 slug（应形如 0001.two-sum）")
+        raise SystemExit(f"✘ 无法从 {p} 解析题目 slug（目录名 '{name}'，且 question.md 无题目链接）")
     return p, qid, slug
 
 
@@ -240,7 +255,7 @@ def git_commit(dirpath, qid, slug, sid, lang, archive_path, r, hot100_updated=Fa
         print("⚠ 暂存区没有变化，跳过 commit")
         return
     total = f"{r.get('total_correct')}/{r.get('total_testcases')}"
-    msg = (f"solve({qid}.{slug}): AC submission {sid}\n\n"
+    msg = (f"solve({label(qid, slug)}): AC submission {sid}\n\n"
            f"- 题目标识: {qid} / {slug}\n"
            f"- submission: {sid}\n"
            f"- 语言: {lang}\n"
@@ -249,7 +264,7 @@ def git_commit(dirpath, qid, slug, sid, lang, archive_path, r, hot100_updated=Fa
            f"{int(r.get('memory') or 0) / 1e6:.1f} MB\n"
            + ("- HOT100.md: 已标记完成\n" if hot100_updated else ""))
     subprocess.run(["git", "commit", "-q", "-m", msg], cwd=REPO, check=True)
-    print(f"📝 已提交: solve({qid}.{slug}): AC submission {sid}")
+    print(f"📝 已提交: solve({label(qid, slug)}): AC submission {sid}")
 
 
 def main():
@@ -271,7 +286,7 @@ def main():
         raise SystemExit(f"✘ 找不到解答文件: {stub}")
 
     code = extract_code(open(stub).read(), args.lang)
-    print(f"● {qid}.{slug}  [{args.lang}]  {len(code.splitlines())} 行 / {len(code)} 字符")
+    print(f"● {label(qid, slug)}  [{args.lang}]  {len(code.splitlines())} 行 / {len(code)} 字符")
     if args.dry_run:
         print("-" * 60)
         print(code)

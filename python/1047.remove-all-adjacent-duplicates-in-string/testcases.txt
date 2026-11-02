@@ -1,0 +1,9 @@
+input:
+"abbaca"
+output:
+"ca"
+
+input:
+"azxxzy"
+output:
+"ay"

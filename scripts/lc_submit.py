@@ -2,11 +2,11 @@
 """提交 leetcode.cn 题目 → 在线跑全部用例 → AC 后归档到 solutions/<lang>/ 并还原 stub → git commit。
 
 用法:
-    scripts/lc-submit.py python/0001.two-sum
-    scripts/lc-submit.py python/0001.two-sum/solution.py
-    scripts/lc-submit.py python/0001.two-sum --dry-run     # 只看将提交的代码，不真的提交
-    scripts/lc-submit.py python/0001.two-sum --no-commit   # 归档+还原，但不 git commit
-    scripts/lc-submit.py python/0001.two-sum --keep-stub   # 不还原 solution.py
+    scripts/lc_submit.py python/0001.two-sum
+    scripts/lc_submit.py python/0001.two-sum/solution.py
+    scripts/lc_submit.py python/0001.two-sum --dry-run     # 只看将提交的代码，不真的提交
+    scripts/lc_submit.py python/0001.two-sum --no-commit   # 归档+还原，但不 git commit
+    scripts/lc_submit.py python/0001.two-sum --keep-stub   # 不还原 solution.py
 
 约定:
     * 提交的是 solution.py 中 `@lc code=begin` ~ `@lc code=end` 之间的代码（去除 leetgo 脚手架）

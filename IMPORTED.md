@@ -5,7 +5,7 @@
 语言分布：`python3` 111，`java` 94，`cpp` 60，`c` 48，`javascript` 1
 
 布局：`python/<id>.<slug>/solutions/<lang>/<basename>-<submission_id>.<ext>`
-（`solution.py` 是 leetgo 生成的练习用 stub；`scripts/lc-submit.py` 提交 AC 后也按同一格式归档。）
+（`solution.py` 是 leetgo 生成的练习用 stub；`scripts/lc_submit.py` 提交 AC 后也按同一格式归档。）
 
 | 题号 | 题目 | 难度 | 热题100 | 归档（语言: 份数） |
 |---|---|---|---|---|
